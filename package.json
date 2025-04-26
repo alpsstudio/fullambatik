@@ -1,19 +1,14 @@
 {
-    "private": true,
-    "scripts": {
-        "dev": "vite",
-        "build": "vite build"
-    },
-    "devDependencies": {
-        "autoprefixer": "^10.4.21",
-        "axios": "^1.1.2",
-        "laravel-vite-plugin": "^1.2.0",
-        "lodash": "^4.17.19",
-        "postcss": "^8.5.3",
-        "tailwindcss": "^4.1.4",
-        "vite": "^6.3.3"
-    },
-    "dependencies": {
-        "package_name": "^1.0.2"
-    }
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "laravel-vite-plugin": "^0.7.0",
+    "vite": "^6.3.3",
+    "vue": "^3.4.0"
+  }
 }
