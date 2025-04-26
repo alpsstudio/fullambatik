@@ -1,25 +1,45 @@
-# 1. Base image: PHP 8.1 FPM + Node.js
-FROM ghcr.io/shivammathur/php:8.1-fpm-node
+# 1. Gunakan base image PHP resmi
+FROM php:8.1-fpm
 
-# 2. Set working directory
-WORKDIR /app
+# 2. Install utilitas dan ekstensi PHP yang diperlukan Larave l
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    zip \
+    unzip \
+    libzip-dev \
+    libpng-dev \
+    libonig-dev \
+    && docker-php-ext-install pdo_mysql zip mbstring gd \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy hanya package.json + package-lock.json dulu
+# 3. Install Node.js (versi 18.x) dari NodeSource
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
+    && apt-get install -y nodejs \
+    && npm install -g npm@latest \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# 4. Set working directory
+WORKDIR /var/www/html
+
+# 5. Copy dan install Composer dependencies
+COPY composer.json composer.lock ./
+RUN composer install --no-dev --optimize-autoloader
+
+# 6. Copy dan install NPM dependencies lalu build asset Vite
 COPY package.json package-lock.json ./
+RUN npm install --legacy-peer-deps \
+    && npm run build
 
-# Install dependencies
-RUN npm install --production --legacy-peer-deps
-
-# Sekarang copy seluruh kode
+# 7. Copy seluruh source code aplikasi
 COPY . .
 
-# Build assets Vite
-RUN npm run build
+# 8. Set permission storage & cache
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
+# 9. Expose port PHP-FPM
+EXPOSE 9000
 
-# 7. (Optional) Run database migrations
-# RUN php artisan migrate --force
-
-# 8. Expose port dan jalankan built‐in server
-EXPOSE 8080
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8080"]
+# 10. Jalankan PHP-FPM
+CMD ["php-fpm"]
