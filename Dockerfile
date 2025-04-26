@@ -1,45 +1,54 @@
-# 1. Gunakan base image PHP resmi
+# ————————————————————————————————
+# Stage 1: Build frontend (Node)
+# ————————————————————————————————
+FROM node:18-alpine AS node_builder
+
+WORKDIR /app
+
+# Copy hanya file yang dibutuhkan untuk install dependencies
+COPY package.json package-lock.json ./
+
+# Install dependencies dan build asset Vite
+RUN npm ci --legacy-peer-deps
+COPY vite.config.js resources resources/css resources/js ./
+RUN npm run build
+
+# ————————————————————————————————
+# Stage 2: Setup aplikasi Laravel (PHP)
+# ————————————————————————————————
 FROM php:8.1-fpm
 
-# 2. Install utilitas dan ekstensi PHP yang diperlukan Larave l
+# Install ekstensi PHP yang dibutuhkan Laravel
 RUN apt-get update && apt-get install -y \
-    git \
-    curl \
+    libpng-dev \
+    libzip-dev \
+    libonig-dev \
     zip \
     unzip \
-    libzip-dev \
-    libpng-dev \
-    libonig-dev \
-    && docker-php-ext-install pdo_mysql zip mbstring gd \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+  && docker-php-ext-configure gd --with-jpeg --with-freetype \
+  && docker-php-ext-install pdo_mysql zip gd mbstring \
+  && rm -rf /var/lib/apt/lists/*
 
-# 3. Install Node.js (versi 18.x) dari NodeSource
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - \
-    && apt-get install -y nodejs \
-    && npm install -g npm@latest \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+# Copy Composer dari image resmi
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
-# 4. Set working directory
 WORKDIR /var/www/html
 
-# 5. Copy dan install Composer dependencies
+# Install dependencies PHP
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --optimize-autoloader
 
-# 6. Copy dan install NPM dependencies lalu build asset Vite
-COPY package.json package-lock.json ./
-RUN npm install --legacy-peer-deps \
-    && npm run build
-
-# 7. Copy seluruh source code aplikasi
+# Copy seluruh source Laravel
 COPY . .
 
-# 8. Set permission storage & cache
-RUN chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+# Copy hasil build Vite dari stage 1
+COPY --from=node_builder /app/public/build public/build
 
-# 9. Expose port PHP-FPM
+# Set permission storage & cache
+RUN chown -R www-data:www-data storage bootstrap/cache \
+  && chmod -R 775 storage bootstrap/cache
+
 EXPOSE 9000
 
-# 10. Jalankan PHP-FPM
+# Jalankan PHP-FPM
 CMD ["php-fpm"]
