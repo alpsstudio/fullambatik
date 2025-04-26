@@ -1,0 +1,89 @@
+/* ====== Welcome Page Style ====== */
+body {
+    margin: 0;
+    padding: 0;
+    background-color: #0f0f11;
+    color: white;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 1rem;
+}
+
+h1 span {
+    color: #7c3aed; /* Ungu keren */
+}
+
+p {
+    font-size: 1.1rem;
+    color: #ccc;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+}
+
+.marquee-container {
+    overflow: hidden;
+    white-space: nowrap;
+    border: 1px solid #7c3aed;
+    background-color: rgba(124, 58, 237, 0.1);
+    border-radius: 9999px;
+    padding: 10px 20px;
+    margin-bottom: 2rem;
+    width: 90%;
+    max-width: 400px;
+}
+
+.marquee-text {
+    display: inline-block;
+    animation: marquee 10s linear infinite;
+    color: #c4b5fd;
+    font-weight: 500;
+}
+
+@keyframes marquee {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+
+.button-start {
+    background-color: #7c3aed;
+    color: white;
+    padding: 12px 24px;
+    border-radius: 9999px;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s;
+}
+
+.button-start:hover {
+    background-color: #5b21b6;
+    transform: scale(1.05);
+}
+
+/* === Mobile Responsive === */
+@media (max-width: 640px) {
+    h1 {
+        font-size: 2rem;
+    }
+
+    p {
+        font-size: 1rem;
+    }
+
+    .button-start {
+        font-size: 0.9rem;
+        padding: 10px 20px;
+    }
+}

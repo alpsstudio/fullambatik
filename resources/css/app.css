@@ -1,0 +1,60 @@
+/* app.css */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Kustom tambahan untuk landing page */
+body {
+    background-color: #0f0f11;
+    color: white;
+    font-family: 'Inter', sans-serif;
+}
+
+h1 span {
+    color: #818cf8; /* indigo-400 */
+}
+
+.text-gray-300 {
+    color: #d1d5db;
+}
+
+.bg-indigo-950 {
+    background-color: #1e1b4b; /* dark indigo */
+}
+
+.bg-opacity-20 {
+    background-color: rgba(30, 27, 75, 0.2);
+}
+
+.border-indigo-400 {
+    border-color: #818cf8;
+}
+
+.bg-purple-600 {
+    background-color: #8b5cf6;
+}
+
+.hover\:bg-purple-700:hover {
+    background-color: #7c3aed;
+}
+
+.animate-marquee {
+    display: inline-block;
+    animation: marquee 10s linear infinite;
+}
+
+@keyframes marquee {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+/* Tambahan untuk reveal animasi */
+.reveal {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: all 0.8s ease;
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0px);
+}
